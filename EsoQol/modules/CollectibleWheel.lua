@@ -140,7 +140,7 @@ function CollectibleWheel:TryUseCollectible(collectibleId)
     end
 
     -- Re-validate: state can change while the wheel is open (combat, zoning, cooldowns).
-    local isUsable, reasonText = self:GetCollectibleState(collectibleId)
+    local isUsable, reasonText, isActive = self:GetCollectibleState(collectibleId)
     if not isUsable then
         ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.NEGATIVE_CLICK, reasonText)
         return false
@@ -148,6 +148,12 @@ function CollectibleWheel:TryUseCollectible(collectibleId)
 
     UseCollectible(collectibleId, PLAYER)
     self.savedVars.lastCollectibleId = collectibleId
+
+    if self.savedVars.chatMessage then
+        -- Clickable [Name] link, built only when the message is actually sent.
+        local link = GetCollectibleLink(collectibleId, LINK_STYLE_BRACKETS)
+        addon:SystemMessage(zo_strformat(isActive and SI_ESOQOL_CHAT_DISMISS or SI_ESOQOL_CHAT_SUMMON, link))
+    end
     return true
 end
 

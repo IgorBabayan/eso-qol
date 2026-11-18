@@ -14,6 +14,7 @@ addon.defaults =
         enabled = true,
         hideUnavailable = false,
         tapToggleLast = true,
+        chatMessage = true,
         lastCollectibleId = 0,
     },
     assistantWheel =
@@ -21,6 +22,7 @@ addon.defaults =
         enabled = true,
         hideUnavailable = false,
         tapToggleLast = true,
+        chatMessage = true,
         lastCollectibleId = 0,
     },
     pledges =
@@ -28,6 +30,7 @@ addon.defaults =
         enabled = true,
         difficulty = "auto", -- "auto" | "normal" | "veteran"
         openSpecificList = true,
+        showQuestMarker = true,
         notify = true,
     },
     skipIntro =

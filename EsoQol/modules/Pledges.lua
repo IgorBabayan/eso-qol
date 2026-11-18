@@ -18,6 +18,10 @@ local addon = EsoQol
 
 local EVENT_NAMESPACE = addon.name .. "_Pledges"
 local VETERAN_CHAMPION_POINTS = 160
+local KEYBOARD_ENTRY_TEMPLATE = "ZO_ActivityFinderTemplateNavigationEntry_Keyboard"
+local QUEST_MARKER_TEXTURE = "EsoUI/Art/FloatingMarkers/repeatableQuest_icon.dds"
+local KEYBOARD_MARKER_SIZE = 28
+local GAMEPAD_MARKER_SIZE = 32
 
 local Pledges =
 {
@@ -26,6 +30,7 @@ local Pledges =
     activityIndex = nil,      -- built lazily
     markedEntries = {},       -- [activityEntry] = questName
     appliedLocations = {},    -- [location] = true, locations this addon selected
+    markedActivityIds = {},   -- [activityId] = true, both difficulties of every pledged dungeon (O(1) row lookup)
 }
 addon.Pledges = Pledges
 
@@ -218,6 +223,80 @@ function Pledges:RefreshKeyboardView()
     end
 end
 
+function Pledges:RefreshGamepadView()
+    local finder = DUNGEON_FINDER_GAMEPAD
+    if finder and finder:IsShowing() then
+        finder:RefreshView()
+    end
+end
+
+function Pledges:RefreshFinderViews()
+    self:RefreshKeyboardView()
+    self:RefreshGamepadView()
+end
+
+----------------------------------
+-- Quest markers in the dungeon list
+----------------------------------
+
+function Pledges:RebuildMarkedActivityIds()
+    local ids = self.markedActivityIds
+    ZO_ClearTable(ids)
+    for entry in pairs(self.markedEntries) do
+        if entry.normal then ids[entry.normal] = true end
+        if entry.veteran then ids[entry.veteran] = true end
+    end
+end
+
+function Pledges:ShouldShowMarker(location)
+    if not (self.isEnabled and self.savedVars.showQuestMarker) or type(location) ~= "table" or location.GetId == nil then
+        return false
+    end
+    local activityId = location:GetId()
+    -- The identity check rules out random-dungeon sets, whose ids live in a different id space.
+    return self.markedActivityIds[activityId] == true and GetLocation(activityId) == location
+end
+
+-- Keyboard: a marker texture is lazily added to each pooled tree row and toggled on every row setup.
+function Pledges:SetupKeyboardRowMarker(control, location)
+    local marker = control.esoQolPledgeMarker
+    local show = self:ShouldShowMarker(location)
+    if not marker then
+        if not show then
+            return
+        end
+        marker = WINDOW_MANAGER:CreateControl(nil, control, CT_TEXTURE)
+        marker:SetTexture(QUEST_MARKER_TEXTURE)
+        marker:SetDimensions(KEYBOARD_MARKER_SIZE, KEYBOARD_MARKER_SIZE)
+        marker:SetAnchor(LEFT, control.text, RIGHT, 2, 0)
+        control.esoQolPledgeMarker = marker
+    end
+    marker:SetHidden(not show)
+end
+
+-- Gamepad: rows are rebuilt from scratch in RefreshView, so prefix the marker icon to the entry text.
+function Pledges:DecorateGamepadList(finder)
+    if next(self.markedActivityIds) == nil or not self.isEnabled or not self.savedVars.showQuestMarker then
+        return
+    end
+
+    local list = finder.entryList
+    local changed = false
+    for index = 1, list:GetNumEntries() do
+        local entryData = list:GetEntryData(index)
+        local location = entryData and entryData.data
+        if location and not location.isRoleSelector and not entryData.esoQolMarked and self:ShouldShowMarker(location) then
+            entryData:SetText(string.format("%s %s", zo_iconFormat(QUEST_MARKER_TEXTURE, GAMEPAD_MARKER_SIZE, GAMEPAD_MARKER_SIZE), entryData.text))
+            entryData.esoQolMarked = true
+            changed = true
+        end
+    end
+
+    if changed then
+        list:RefreshVisible()
+    end
+end
+
 ----------------------------------
 -- Journal scan
 ----------------------------------
@@ -238,10 +317,11 @@ function Pledges:RescanJournal()
             end
         end
     end
+    self:RebuildMarkedActivityIds()
 
-    if self:ClearAppliedSelections(true) then
-        self:RefreshKeyboardView()
-    end
+    -- Selections and/or markers may have changed; both refreshes are no-ops while the finder is closed.
+    self:ClearAppliedSelections(true)
+    self:RefreshFinderViews()
 end
 
 ----------------------------------
@@ -256,6 +336,7 @@ function Pledges:OnQuestAdded(journalIndex, questName)
     local entry = self:ResolveActivityEntry(journalIndex)
     if entry then
         self.markedEntries[entry] = questName
+        self:RebuildMarkedActivityIds()
     end
 
     if self.savedVars.notify then
@@ -267,7 +348,8 @@ function Pledges:OnQuestAdded(journalIndex, questName)
         end
     end
     -- No selection here: the manager marks itself dirty on EVENT_QUEST_ADDED and clears selections
-    -- on its next update; the finder's filter refresh that follows triggers ApplySelections via the hooks.
+    -- on its next update; the finder's filter refresh that follows triggers ApplySelections via the hooks
+    -- and redraws the rows (and so the quest markers).
 end
 
 function Pledges:InstallHooks()
@@ -286,6 +368,18 @@ function Pledges:InstallHooks()
                 end
             end
         end)
+
+        -- Quest marker: wrap the tree row setup. Nodes copy the function when they are created,
+        -- which only happens on RefreshView, so wrapping at load time covers every row.
+        local tree = keyboardFinder.navigationTree
+        local templateInfo = tree and tree.templateInfo and tree.templateInfo[KEYBOARD_ENTRY_TEMPLATE]
+        if templateInfo and templateInfo.setupFunction then
+            local originalSetup = templateInfo.setupFunction
+            templateInfo.setupFunction = function(node, control, data, ...)
+                originalSetup(node, control, data, ...)
+                self:SetupKeyboardRowMarker(control, data)
+            end
+        end
 
         -- On open: optionally jump to the specific list, and make sure marks are applied.
         local fragment = keyboardFinder:GetFragment()
@@ -320,6 +414,10 @@ function Pledges:InstallHooks()
                 self:ApplySelections()
             end
         end)
+
+        SecurePostHook(gamepadFinder, "RefreshView", function(finder)
+            self:DecorateGamepadList(finder)
+        end)
     end
 end
 
@@ -347,9 +445,9 @@ function Pledges:SetEnabled(enabled)
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_QUEST_REMOVED)
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED)
         ZO_ClearTable(self.markedEntries)
-        if self:ClearAppliedSelections(false) then
-            self:RefreshKeyboardView()
-        end
+        ZO_ClearTable(self.markedActivityIds)
+        self:ClearAppliedSelections(false)
+        self:RefreshFinderViews()
     end
 end
 

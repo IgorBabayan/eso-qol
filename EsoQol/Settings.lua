@@ -35,6 +35,15 @@ local function WheelOptions(controls, headerStringId, savedVarsKey, defaults)
         disabled = function() return not SV().enabled end,
         default = defaults.tapToggleLast,
     }
+    controls[#controls + 1] =
+    {
+        type = "checkbox",
+        name = GetString(SI_ESOQOL_SETTINGS_CHAT_MESSAGE),
+        getFunc = function() return SV().chatMessage end,
+        setFunc = function(value) SV().chatMessage = value end,
+        disabled = function() return not SV().enabled end,
+        default = defaults.chatMessage,
+    }
 end
 
 function addon:InitializeSettings()
@@ -108,6 +117,19 @@ function addon:InitializeSettings()
         setFunc = function(value) pledgeSV().openSpecificList = value end,
         disabled = pledgeDisabled,
         default = defaults.pledges.openSpecificList,
+    }
+    controls[#controls + 1] =
+    {
+        type = "checkbox",
+        name = GetString(SI_ESOQOL_SETTINGS_PLEDGES_MARKER),
+        tooltip = GetString(SI_ESOQOL_SETTINGS_PLEDGES_MARKER_TT),
+        getFunc = function() return pledgeSV().showQuestMarker end,
+        setFunc = function(value)
+            pledgeSV().showQuestMarker = value
+            self.Pledges:RefreshFinderViews()
+        end,
+        disabled = pledgeDisabled,
+        default = defaults.pledges.showQuestMarker,
     }
     controls[#controls + 1] =
     {

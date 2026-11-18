@@ -11,6 +11,8 @@ local strings =
     SI_ESOQOL_REASON_COMPANION_QUEST = "Complete this companion's introductory quest first.",
     SI_ESOQOL_REASON_COOLDOWN = "On cooldown: <<1>>",
     SI_ESOQOL_REASON_UNAVAILABLE = "Can't be summoned right now.",
+    SI_ESOQOL_CHAT_SUMMON = "Summoning <<1>>.",
+    SI_ESOQOL_CHAT_DISMISS = "Dismissing <<1>>.",
 
     -- Pledges
     SI_ESOQOL_PLEDGE_MARKED = "Undaunted pledge: |cFFFFFF<<1>>|r marked in the Dungeon Finder.",
@@ -24,7 +26,8 @@ local strings =
     SI_ESOQOL_SETTINGS_HIDE_UNAVAILABLE = "Hide unavailable entries",
     SI_ESOQOL_SETTINGS_HIDE_UNAVAILABLE_TT = "Hide entries that can't be summoned instead of showing them greyed out.",
     SI_ESOQOL_SETTINGS_TAP_ACTION = "Tap key to summon / dismiss last used",
-    SI_ESOQOL_SETTINGS_TAP_ACTION_TT = "A short tap of the wheel key summons (or dismisses, if it is out) the entry you used last, without opening the wheel.",
+    SI_ESOQOL_SETTINGS_CHAT_MESSAGE = "Chat message on summon / dismiss",
+    SI_ESOQOL_SETTINGS_TAP_ACTION_TT ="A short tap of the wheel key summons (or dismisses, if it is out) the entry you used last, without opening the wheel.",
 
     SI_ESOQOL_SETTINGS_PLEDGES_HEADER = "Undaunted Pledges",
     SI_ESOQOL_SETTINGS_PLEDGES_DESC = "When you accept an Undaunted pledge, its dungeon is checked in the Dungeon Finder's specific dungeon list. It is unchecked again when the pledge is completed or abandoned.",
@@ -34,6 +37,8 @@ local strings =
     SI_ESOQOL_SETTINGS_PLEDGES_DIFFICULTY_VETERAN = "Veteran",
     SI_ESOQOL_SETTINGS_PLEDGES_SPECIFIC = "Open specific dungeon list",
     SI_ESOQOL_SETTINGS_PLEDGES_SPECIFIC_TT = "While you have a pledge, the Dungeon Finder opens on the specific dungeon list instead of the random dungeon.",
+    SI_ESOQOL_SETTINGS_PLEDGES_MARKER = "Quest marker in dungeon list",
+    SI_ESOQOL_SETTINGS_PLEDGES_MARKER_TT = "Shows a quest marker next to dungeons you have a pledge for in the Dungeon Finder list.",
     SI_ESOQOL_SETTINGS_PLEDGES_NOTIFY = "Chat notification",
 
     SI_ESOQOL_SETTINGS_INTRO_HEADER = "Game Start",
