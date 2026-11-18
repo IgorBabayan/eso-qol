@@ -153,6 +153,28 @@ function addon:InitializeSettings()
         default = defaults.skipIntro.enabled,
     }
 
+    -- 5: hotkeys
+    local hotkeySV = function() return self.sv.hotkeys end
+    controls[#controls + 1] = { type = "header", name = GetString(SI_ESOQOL_SETTINGS_HOTKEYS_HEADER) }
+    controls[#controls + 1] = { type = "description", text = GetString(SI_ESOQOL_SETTINGS_HOTKEYS_DESC) }
+    controls[#controls + 1] =
+    {
+        type = "checkbox",
+        name = GetString(SI_ESOQOL_SETTINGS_HOTKEYS_OUTSIDE),
+        tooltip = GetString(SI_ESOQOL_SETTINGS_HOTKEYS_OUTSIDE_TT),
+        getFunc = function() return hotkeySV().teleportOutside end,
+        setFunc = function(value) hotkeySV().teleportOutside = value end,
+        default = defaults.hotkeys.teleportOutside,
+    }
+    controls[#controls + 1] =
+    {
+        type = "checkbox",
+        name = GetString(SI_ESOQOL_SETTINGS_HOTKEYS_CHAT),
+        getFunc = function() return hotkeySV().teleportChatMessage end,
+        setFunc = function(value) hotkeySV().teleportChatMessage = value end,
+        default = defaults.hotkeys.teleportChatMessage,
+    }
+
     self.settingsPanel = LAM:RegisterAddonPanel(self.name .. "_Settings", panelData)
     LAM:RegisterOptionControls(self.name .. "_Settings", controls)
 end

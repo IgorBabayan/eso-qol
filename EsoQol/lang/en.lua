@@ -3,6 +3,14 @@ local strings =
     -- Keybindings
     SI_BINDING_NAME_ESOQOL_COMPANION_WHEEL = "Companion Wheel",
     SI_BINDING_NAME_ESOQOL_ASSISTANT_WHEEL = "Assistant Wheel",
+    SI_BINDING_NAME_ESOQOL_RELOAD_UI = "Reload UI",
+    SI_BINDING_NAME_ESOQOL_TELEPORT_HOME = "Teleport to Primary House",
+
+    -- Hotkeys
+    SI_ESOQOL_HOTKEY_NO_PRIMARY_HOUSE = "You have no primary residence set.",
+    SI_ESOQOL_HOTKEY_IN_COMBAT = "You can't travel home while in combat.",
+    SI_ESOQOL_HOTKEY_TELEPORTING = "Travelling to <<1>>.",
+    SI_ESOQOL_HOTKEY_KEY_IN_USE = "ESO QoL: <<2>> is already used by another action, so \"<<1>>\" was left unbound. Set it in Controls > Keybindings > ESO QoL.",
 
     -- Wheels
     SI_ESOQOL_WHEEL_EMPTY_COMPANIONS = "You have no unlocked companions.",
@@ -43,6 +51,12 @@ local strings =
 
     SI_ESOQOL_SETTINGS_INTRO_HEADER = "Game Start",
     SI_ESOQOL_SETTINGS_INTRO_SKIP = "Skip intro videos",
+    SI_ESOQOL_SETTINGS_HOTKEYS_HEADER = "Hotkeys",
+    SI_ESOQOL_SETTINGS_HOTKEYS_DESC = "Reload UI (default F12) and Teleport to Primary House (default Home). Change the keys in Controls > Keybindings > ESO QoL.",
+    SI_ESOQOL_SETTINGS_HOTKEYS_OUTSIDE = "Arrive outside the house",
+    SI_ESOQOL_SETTINGS_HOTKEYS_OUTSIDE_TT = "Teleport to the house's outdoor entrance instead of inside.",
+    SI_ESOQOL_SETTINGS_HOTKEYS_CHAT = "Chat message on teleport",
+
     SI_ESOQOL_SETTINGS_INTRO_SKIP_TT = "Skips the logo and intro videos when the game starts. Takes effect from the next game launch.",
 }
 

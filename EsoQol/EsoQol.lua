@@ -38,6 +38,12 @@ addon.defaults =
         enabled = true,
         appliedByAddon = false,
     },
+    hotkeys =
+    {
+        teleportOutside = false,
+        teleportChatMessage = true,
+        defaultsApplied = {}, -- [actionName] = true once the default key was offered
+    },
 }
 
 -- Modules register themselves at file load; they are initialized in manifest order once saved vars are ready.

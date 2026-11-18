@@ -9,6 +9,12 @@
                 <Down>EsoQol.Wheels.OnKeyDown("assistant")</Down>
                 <Up>EsoQol.Wheels.OnKeyUp("assistant")</Up>
             </Action>
+            <Action name="ESOQOL_RELOAD_UI">
+                <Down>EsoQol.Hotkeys.ReloadUI()</Down>
+            </Action>
+            <Action name="ESOQOL_TELEPORT_HOME">
+                <Down>EsoQol.Hotkeys.TeleportHome()</Down>
+            </Action>
         </Category>
     </Layer>
 </Bindings>

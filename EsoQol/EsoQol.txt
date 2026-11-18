@@ -1,5 +1,5 @@
 ## Title: ESO QoL
-## Description: Quality of life: companion & assistant radial menus, Undaunted pledge dungeon marking, intro video skipping.
+## Description: Quality of life: companion & assistant radial menus, Undaunted pledge dungeon marking, intro video skipping, Reload UI and teleport-home hotkeys.
 ## Author: IgorBabayan
 ## Version: 1.0.0
 ## AddOnVersion: 10000
@@ -14,6 +14,7 @@ modules/CollectibleWheel.lua
 modules/Wheels.lua
 modules/Pledges.lua
 modules/SkipIntro.lua
+modules/Hotkeys.lua
 Settings.lua
 
 EsoQol.xml
