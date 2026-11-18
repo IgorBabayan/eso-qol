@@ -1,0 +1,14 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="ESO QoL">
+            <Action name="ESOQOL_COMPANION_WHEEL">
+                <Down>EsoQol.Wheels.OnKeyDown("companion")</Down>
+                <Up>EsoQol.Wheels.OnKeyUp("companion")</Up>
+            </Action>
+            <Action name="ESOQOL_ASSISTANT_WHEEL">
+                <Down>EsoQol.Wheels.OnKeyDown("assistant")</Down>
+                <Up>EsoQol.Wheels.OnKeyUp("assistant")</Up>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

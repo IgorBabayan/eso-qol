@@ -1,0 +1,20 @@
+## Title: ESO QoL
+## Description: Quality of life: companion & assistant radial menus, Undaunted pledge dungeon marking, intro video skipping.
+## Author: IgorBabayan
+## Version: 1.0.0
+## AddOnVersion: 10000
+## APIVersion: 101050 101051
+## SavedVariables: EsoQol_SV
+## OptionalDependsOn: LibAddonMenu-2.0>=32
+
+lang/en.lua
+
+EsoQol.lua
+modules/CollectibleWheel.lua
+modules/Wheels.lua
+modules/Pledges.lua
+modules/SkipIntro.lua
+Settings.lua
+
+EsoQol.xml
+Bindings.xml

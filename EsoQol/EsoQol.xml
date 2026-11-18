@@ -1,0 +1,20 @@
+<GuiXml>
+    <Controls>
+        <Control name="EsoQol_WheelEntry" inherits="ZO_SelectableItemRadialMenuEntryTemplate" virtual="true"/>
+
+        <!-- Kept hidden while idle so the controller's OnUpdate never runs outside an interaction. -->
+        <TopLevelControl name="EsoQol_CompanionWheel" hidden="true">
+            <AnchorFill/>
+            <Controls>
+                <Control name="$(parent)Menu" inherits="ZO_RadialMenuTemplate"/>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="EsoQol_AssistantWheel" hidden="true">
+            <AnchorFill/>
+            <Controls>
+                <Control name="$(parent)Menu" inherits="ZO_RadialMenuTemplate"/>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

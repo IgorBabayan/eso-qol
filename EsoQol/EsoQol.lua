@@ -1,0 +1,68 @@
+EsoQol = EsoQol or {}
+
+local addon = EsoQol
+addon.name = "EsoQol"
+addon.displayName = "ESO QoL"
+addon.version = "1.0.0"
+
+local SAVED_VARS_VERSION = 1
+
+addon.defaults =
+{
+    companionWheel =
+    {
+        enabled = true,
+        hideUnavailable = false,
+        tapToggleLast = true,
+        lastCollectibleId = 0,
+    },
+    assistantWheel =
+    {
+        enabled = true,
+        hideUnavailable = false,
+        tapToggleLast = true,
+        lastCollectibleId = 0,
+    },
+    pledges =
+    {
+        enabled = true,
+        difficulty = "auto", -- "auto" | "normal" | "veteran"
+        openSpecificList = true,
+        notify = true,
+    },
+    skipIntro =
+    {
+        enabled = true,
+        appliedByAddon = false,
+    },
+}
+
+-- Modules register themselves at file load; they are initialized in manifest order once saved vars are ready.
+addon.modules = {}
+
+function addon:RegisterModule(module)
+    self.modules[#self.modules + 1] = module
+end
+
+function addon:SystemMessage(text)
+    if CHAT_ROUTER then
+        CHAT_ROUTER:AddSystemMessage(text)
+    end
+end
+
+local function OnAddOnLoaded(_, addOnName)
+    if addOnName ~= addon.name then
+        return
+    end
+    EVENT_MANAGER:UnregisterForEvent(addon.name, EVENT_ADD_ON_LOADED)
+
+    addon.sv = ZO_SavedVars:NewAccountWide("EsoQol_SV", SAVED_VARS_VERSION, nil, addon.defaults)
+
+    for _, module in ipairs(addon.modules) do
+        module:Initialize(addon.sv[module.savedVarsKey])
+    end
+
+    addon:InitializeSettings()
+end
+
+EVENT_MANAGER:RegisterForEvent(addon.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
