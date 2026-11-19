@@ -121,15 +121,15 @@ function addon:InitializeSettings()
     controls[#controls + 1] =
     {
         type = "checkbox",
-        name = GetString(SI_ESOQOL_SETTINGS_PLEDGES_MARKER),
-        tooltip = GetString(SI_ESOQOL_SETTINGS_PLEDGES_MARKER_TT),
-        getFunc = function() return pledgeSV().showQuestMarker end,
+        name = GetString(SI_ESOQOL_SETTINGS_PLEDGES_HIGHLIGHT),
+        tooltip = GetString(SI_ESOQOL_SETTINGS_PLEDGES_HIGHLIGHT_TT),
+        getFunc = function() return pledgeSV().highlightDungeon end,
         setFunc = function(value)
-            pledgeSV().showQuestMarker = value
+            pledgeSV().highlightDungeon = value
             self.Pledges:RefreshFinderViews()
         end,
         disabled = pledgeDisabled,
-        default = defaults.pledges.showQuestMarker,
+        default = defaults.pledges.highlightDungeon,
     }
     controls[#controls + 1] =
     {
@@ -141,7 +141,22 @@ function addon:InitializeSettings()
         default = defaults.pledges.notify,
     }
 
-    -- 4: game start
+    -- 4: dungeon achievement icons
+    controls[#controls + 1] = { type = "header", name = GetString(SI_ESOQOL_SETTINGS_ACHIEVEMENTS_HEADER) }
+    controls[#controls + 1] = { type = "description", text = GetString(SI_ESOQOL_SETTINGS_ACHIEVEMENTS_DESC) }
+    controls[#controls + 1] =
+    {
+        type = "checkbox",
+        name = GetString(SI_ESOQOL_SETTINGS_ENABLED),
+        getFunc = function() return self.sv.dungeonAchievements.enabled end,
+        setFunc = function(value)
+            self.sv.dungeonAchievements.enabled = value
+            self.DungeonAchievements:SetEnabled(value)
+        end,
+        default = defaults.dungeonAchievements.enabled,
+    }
+
+    -- 5: game start
     controls[#controls + 1] = { type = "header", name = GetString(SI_ESOQOL_SETTINGS_INTRO_HEADER) }
     controls[#controls + 1] =
     {
@@ -153,7 +168,7 @@ function addon:InitializeSettings()
         default = defaults.skipIntro.enabled,
     }
 
-    -- 5: hotkeys
+    -- 6: hotkeys
     local hotkeySV = function() return self.sv.hotkeys end
     controls[#controls + 1] = { type = "header", name = GetString(SI_ESOQOL_SETTINGS_HOTKEYS_HEADER) }
     controls[#controls + 1] = { type = "description", text = GetString(SI_ESOQOL_SETTINGS_HOTKEYS_DESC) }

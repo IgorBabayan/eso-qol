@@ -30,8 +30,12 @@ addon.defaults =
         enabled = true,
         difficulty = "auto", -- "auto" | "normal" | "veteran"
         openSpecificList = true,
-        showQuestMarker = true,
+        highlightDungeon = true,
         notify = true,
+    },
+    dungeonAchievements =
+    {
+        enabled = true,
     },
     skipIntro =
     {
@@ -56,6 +60,18 @@ end
 function addon:SystemMessage(text)
     if CHAT_ROUTER then
         CHAT_ROUTER:AddSystemMessage(text)
+    end
+end
+
+-- Redraws the Dungeon Finder list when it is on screen (no-op while it is closed).
+function addon:RefreshDungeonFinderViews()
+    local keyboardFinder = DUNGEON_FINDER_KEYBOARD
+    if keyboardFinder and keyboardFinder.fragment and keyboardFinder.fragment:IsShowing() then
+        keyboardFinder:RefreshView()
+    end
+    local gamepadFinder = DUNGEON_FINDER_GAMEPAD
+    if gamepadFinder and gamepadFinder:IsShowing() then
+        gamepadFinder:RefreshView()
     end
 end
 

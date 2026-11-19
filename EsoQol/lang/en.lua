@@ -45,9 +45,12 @@ local strings =
     SI_ESOQOL_SETTINGS_PLEDGES_DIFFICULTY_VETERAN = "Veteran",
     SI_ESOQOL_SETTINGS_PLEDGES_SPECIFIC = "Open specific dungeon list",
     SI_ESOQOL_SETTINGS_PLEDGES_SPECIFIC_TT = "While you have a pledge, the Dungeon Finder opens on the specific dungeon list instead of the random dungeon.",
-    SI_ESOQOL_SETTINGS_PLEDGES_MARKER = "Quest marker in dungeon list",
-    SI_ESOQOL_SETTINGS_PLEDGES_MARKER_TT = "Shows a quest marker next to dungeons you have a pledge for in the Dungeon Finder list.",
+    SI_ESOQOL_SETTINGS_PLEDGES_HIGHLIGHT = "Highlight pledge dungeons",
+    SI_ESOQOL_SETTINGS_PLEDGES_HIGHLIGHT_TT = "Shows the names of dungeons you have a pledge for in light blue in the Dungeon Finder list.",
     SI_ESOQOL_SETTINGS_PLEDGES_NOTIFY = "Chat notification",
+
+    SI_ESOQOL_SETTINGS_ACHIEVEMENTS_HEADER = "Dungeon Achievements",
+    SI_ESOQOL_SETTINGS_ACHIEVEMENTS_DESC = "Icons next to each dungeon in the Dungeon Finder's specific dungeon list show the achievements you have earned: a check on normal rows for the normal clear; a check, hard mode and deathless icon on veteran rows. Icons for achievements you haven't earned are hidden.",
 
     SI_ESOQOL_SETTINGS_INTRO_HEADER = "Game Start",
     SI_ESOQOL_SETTINGS_INTRO_SKIP = "Skip intro videos",

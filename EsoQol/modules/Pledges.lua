@@ -1,6 +1,6 @@
 --[[
     Undaunted pledges: when a pledge quest is in the journal, its dungeon is checked
-    in the Dungeon Finder's specific dungeon list (keyboard and gamepad).
+    in the Dungeon Finder's specific dungeon list and its name is shown in light blue (keyboard and gamepad).
 
     How it fits the game's own code:
     * ZO_ACTIVITY_FINDER_ROOT_MANAGER clears every selection whenever the finder's filter changes or its
@@ -19,9 +19,7 @@ local addon = EsoQol
 local EVENT_NAMESPACE = addon.name .. "_Pledges"
 local VETERAN_CHAMPION_POINTS = 160
 local KEYBOARD_ENTRY_TEMPLATE = "ZO_ActivityFinderTemplateNavigationEntry_Keyboard"
-local QUEST_MARKER_TEXTURE = "EsoUI/Art/FloatingMarkers/repeatableQuest_icon.dds"
-local KEYBOARD_MARKER_SIZE = 28
-local GAMEPAD_MARKER_SIZE = 32
+local PLEDGE_COLOR = ZO_ColorDef:New("3388EE") -- light blue, as in Bandits User Interface
 
 local Pledges =
 {
@@ -216,27 +214,12 @@ local function IsKeyboardSpecificFilterActive(finder)
     return selected ~= nil and selected.data ~= nil and not selected.data.singular
 end
 
-function Pledges:RefreshKeyboardView()
-    local finder = DUNGEON_FINDER_KEYBOARD
-    if finder and finder.fragment and finder.fragment:IsShowing() then
-        finder:RefreshView()
-    end
-end
-
-function Pledges:RefreshGamepadView()
-    local finder = DUNGEON_FINDER_GAMEPAD
-    if finder and finder:IsShowing() then
-        finder:RefreshView()
-    end
-end
-
 function Pledges:RefreshFinderViews()
-    self:RefreshKeyboardView()
-    self:RefreshGamepadView()
+    addon:RefreshDungeonFinderViews()
 end
 
 ----------------------------------
--- Quest markers in the dungeon list
+-- Pledge highlight in the dungeon list
 ----------------------------------
 
 function Pledges:RebuildMarkedActivityIds()
@@ -248,8 +231,8 @@ function Pledges:RebuildMarkedActivityIds()
     end
 end
 
-function Pledges:ShouldShowMarker(location)
-    if not (self.isEnabled and self.savedVars.showQuestMarker) or type(location) ~= "table" or location.GetId == nil then
+function Pledges:ShouldHighlight(location)
+    if not (self.isEnabled and self.savedVars.highlightDungeon) or type(location) ~= "table" or location.GetId == nil then
         return false
     end
     local activityId = location:GetId()
@@ -257,26 +240,17 @@ function Pledges:ShouldShowMarker(location)
     return self.markedActivityIds[activityId] == true and GetLocation(activityId) == location
 end
 
--- Keyboard: a marker texture is lazily added to each pooled tree row and toggled on every row setup.
-function Pledges:SetupKeyboardRowMarker(control, location)
-    local marker = control.esoQolPledgeMarker
-    local show = self:ShouldShowMarker(location)
-    if not marker then
-        if not show then
-            return
-        end
-        marker = WINDOW_MANAGER:CreateControl(nil, control, CT_TEXTURE)
-        marker:SetTexture(QUEST_MARKER_TEXTURE)
-        marker:SetDimensions(KEYBOARD_MARKER_SIZE, KEYBOARD_MARKER_SIZE)
-        marker:SetAnchor(LEFT, control.text, RIGHT, 2, 0)
-        control.esoQolPledgeMarker = marker
+-- Keyboard: the original setup has just written the plain name; the color markup overrides the label's
+-- own (normal / mouse-over) color. Pooled rows need no reset: every setup rewrites the text.
+function Pledges:SetupKeyboardRowHighlight(control, location)
+    if self:ShouldHighlight(location) then
+        control.text:SetText(PLEDGE_COLOR:Colorize(control.text:GetText()))
     end
-    marker:SetHidden(not show)
 end
 
--- Gamepad: rows are rebuilt from scratch in RefreshView, so prefix the marker icon to the entry text.
+-- Gamepad: rows are rebuilt from scratch in RefreshView, so color the entry text afterwards.
 function Pledges:DecorateGamepadList(finder)
-    if next(self.markedActivityIds) == nil or not self.isEnabled or not self.savedVars.showQuestMarker then
+    if next(self.markedActivityIds) == nil or not self.isEnabled or not self.savedVars.highlightDungeon then
         return
     end
 
@@ -285,9 +259,9 @@ function Pledges:DecorateGamepadList(finder)
     for index = 1, list:GetNumEntries() do
         local entryData = list:GetEntryData(index)
         local location = entryData and entryData.data
-        if location and not location.isRoleSelector and not entryData.esoQolMarked and self:ShouldShowMarker(location) then
-            entryData:SetText(string.format("%s %s", zo_iconFormat(QUEST_MARKER_TEXTURE, GAMEPAD_MARKER_SIZE, GAMEPAD_MARKER_SIZE), entryData.text))
-            entryData.esoQolMarked = true
+        if location and not location.isRoleSelector and not entryData.esoQolPledge and self:ShouldHighlight(location) then
+            entryData:SetText(PLEDGE_COLOR:Colorize(entryData.text))
+            entryData.esoQolPledge = true
             changed = true
         end
     end
@@ -319,7 +293,7 @@ function Pledges:RescanJournal()
     end
     self:RebuildMarkedActivityIds()
 
-    -- Selections and/or markers may have changed; both refreshes are no-ops while the finder is closed.
+    -- Selections and/or highlights may have changed; both refreshes are no-ops while the finder is closed.
     self:ClearAppliedSelections(true)
     self:RefreshFinderViews()
 end
@@ -349,7 +323,7 @@ function Pledges:OnQuestAdded(journalIndex, questName)
     end
     -- No selection here: the manager marks itself dirty on EVENT_QUEST_ADDED and clears selections
     -- on its next update; the finder's filter refresh that follows triggers ApplySelections via the hooks
-    -- and redraws the rows (and so the quest markers).
+    -- and redraws the rows (and so the highlights).
 end
 
 function Pledges:InstallHooks()
@@ -369,7 +343,7 @@ function Pledges:InstallHooks()
             end
         end)
 
-        -- Quest marker: wrap the tree row setup. Nodes copy the function when they are created,
+        -- Highlight: wrap the tree row setup. Nodes copy the function when they are created,
         -- which only happens on RefreshView, so wrapping at load time covers every row.
         local tree = keyboardFinder.navigationTree
         local templateInfo = tree and tree.templateInfo and tree.templateInfo[KEYBOARD_ENTRY_TEMPLATE]
@@ -377,7 +351,7 @@ function Pledges:InstallHooks()
             local originalSetup = templateInfo.setupFunction
             templateInfo.setupFunction = function(node, control, data, ...)
                 originalSetup(node, control, data, ...)
-                self:SetupKeyboardRowMarker(control, data)
+                self:SetupKeyboardRowHighlight(control, data)
             end
         end
 
