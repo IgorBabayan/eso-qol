@@ -48,6 +48,10 @@ addon.defaults =
         confirm = true,
         chatMessage = true,
     },
+    confirmText =
+    {
+        enabled = true,
+    },
     hotkeys =
     {
         teleportOutside = false,

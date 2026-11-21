@@ -200,7 +200,19 @@ function addon:InitializeSettings()
         default = defaults.disassembleAll.chatMessage,
     }
 
-    -- 7: hotkeys
+    -- 7: confirmation dialogs
+    controls[#controls + 1] = { type = "header", name = GetString(SI_ESOQOL_SETTINGS_CONFIRM_TEXT_HEADER) }
+    controls[#controls + 1] =
+    {
+        type = "checkbox",
+        name = GetString(SI_ESOQOL_SETTINGS_CONFIRM_TEXT),
+        tooltip = GetString(SI_ESOQOL_SETTINGS_CONFIRM_TEXT_TT),
+        getFunc = function() return self.sv.confirmText.enabled end,
+        setFunc = function(value) self.ConfirmText:SetEnabled(value) end,
+        default = defaults.confirmText.enabled,
+    }
+
+    -- 8: hotkeys
     local hotkeySV = function() return self.sv.hotkeys end
     controls[#controls + 1] = { type = "header", name = GetString(SI_ESOQOL_SETTINGS_HOTKEYS_HEADER) }
     controls[#controls + 1] = { type = "description", text = GetString(SI_ESOQOL_SETTINGS_HOTKEYS_DESC) }
