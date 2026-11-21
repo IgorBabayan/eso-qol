@@ -26,6 +26,15 @@ local strings =
     SI_ESOQOL_PLEDGE_MARKED = "Undaunted pledge: |cFFFFFF<<1>>|r marked in the Dungeon Finder.",
     SI_ESOQOL_PLEDGE_NOT_FOUND = "Undaunted pledge: no Dungeon Finder entry found for |cFFFFFF<<1>>|r.",
 
+    -- Disassemble All (Giladil the Ragpicker)
+    SI_ESOQOL_DISASSEMBLE_ALL = "Disassemble All",
+    SI_ESOQOL_DISASSEMBLE_STOP = "Stop Disassembling",
+    SI_ESOQOL_DISASSEMBLE_CONFIRM = "Disassemble <<1>> items from the list? Items with the Ornate trait, locked items and items in Armory builds are skipped.",
+    SI_ESOQOL_DISASSEMBLE_NOTHING = "Nothing to disassemble.",
+    SI_ESOQOL_DISASSEMBLE_DONE = "Disassemble All: <<1>> items disassembled.",
+    SI_ESOQOL_DISASSEMBLE_STOPPED = "Disassemble All: stopped after <<1>> items.",
+    SI_ESOQOL_DISASSEMBLE_FAILED = "Disassemble All: stopped after <<1>> items (<<2>>).",
+
     -- Settings
     SI_ESOQOL_SETTINGS_COMPANION_HEADER = "Companion Wheel",
     SI_ESOQOL_SETTINGS_ASSISTANT_HEADER = "Assistant Wheel",
@@ -54,6 +63,10 @@ local strings =
 
     SI_ESOQOL_SETTINGS_INTRO_HEADER = "Game Start",
     SI_ESOQOL_SETTINGS_INTRO_SKIP = "Skip intro videos",
+    SI_ESOQOL_SETTINGS_DISASSEMBLE_HEADER = "Disassemble All",
+    SI_ESOQOL_SETTINGS_DISASSEMBLE_DESC = "Adds a \"Disassemble All\" button to Giladil the Ragpicker's deconstruction screen. It deconstructs everything shown in the list (current tab, crafting type filter and \"Include banked items\") in batches of up to 100 until nothing is left. Ornate, locked and Armory items are skipped. Press it again to stop.",
+    SI_ESOQOL_SETTINGS_DISASSEMBLE_CONFIRM = "Ask for confirmation",
+    SI_ESOQOL_SETTINGS_DISASSEMBLE_CHAT = "Chat message when done",
     SI_ESOQOL_SETTINGS_HOTKEYS_HEADER = "Hotkeys",
     SI_ESOQOL_SETTINGS_HOTKEYS_DESC = "Reload UI (default F12) and Teleport to Primary House (default Home). Change the keys in Controls > Keybindings > ESO QoL.",
     SI_ESOQOL_SETTINGS_HOTKEYS_OUTSIDE = "Arrive outside the house",

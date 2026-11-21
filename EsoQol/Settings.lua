@@ -168,7 +168,39 @@ function addon:InitializeSettings()
         default = defaults.skipIntro.enabled,
     }
 
-    -- 6: hotkeys
+    -- 6: Disassemble All (Giladil the Ragpicker)
+    local disassembleSV = function() return self.sv.disassembleAll end
+    local disassembleDisabled = function() return not disassembleSV().enabled end
+    controls[#controls + 1] = { type = "header", name = GetString(SI_ESOQOL_SETTINGS_DISASSEMBLE_HEADER) }
+    controls[#controls + 1] = { type = "description", text = GetString(SI_ESOQOL_SETTINGS_DISASSEMBLE_DESC) }
+    controls[#controls + 1] =
+    {
+        type = "checkbox",
+        name = GetString(SI_ESOQOL_SETTINGS_ENABLED),
+        getFunc = function() return disassembleSV().enabled end,
+        setFunc = function(value) self.DisassembleAll:SetEnabled(value) end,
+        default = defaults.disassembleAll.enabled,
+    }
+    controls[#controls + 1] =
+    {
+        type = "checkbox",
+        name = GetString(SI_ESOQOL_SETTINGS_DISASSEMBLE_CONFIRM),
+        getFunc = function() return disassembleSV().confirm end,
+        setFunc = function(value) disassembleSV().confirm = value end,
+        disabled = disassembleDisabled,
+        default = defaults.disassembleAll.confirm,
+    }
+    controls[#controls + 1] =
+    {
+        type = "checkbox",
+        name = GetString(SI_ESOQOL_SETTINGS_DISASSEMBLE_CHAT),
+        getFunc = function() return disassembleSV().chatMessage end,
+        setFunc = function(value) disassembleSV().chatMessage = value end,
+        disabled = disassembleDisabled,
+        default = defaults.disassembleAll.chatMessage,
+    }
+
+    -- 7: hotkeys
     local hotkeySV = function() return self.sv.hotkeys end
     controls[#controls + 1] = { type = "header", name = GetString(SI_ESOQOL_SETTINGS_HOTKEYS_HEADER) }
     controls[#controls + 1] = { type = "description", text = GetString(SI_ESOQOL_SETTINGS_HOTKEYS_DESC) }

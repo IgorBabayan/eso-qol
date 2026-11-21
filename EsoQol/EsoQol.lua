@@ -42,6 +42,12 @@ addon.defaults =
         enabled = true,
         appliedByAddon = false,
     },
+    disassembleAll =
+    {
+        enabled = true,
+        confirm = true,
+        chatMessage = true,
+    },
     hotkeys =
     {
         teleportOutside = false,
