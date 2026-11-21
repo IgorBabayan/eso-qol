@@ -14,7 +14,8 @@
     Performance notes:
     * The dungeon activity index is built once, on first use.
     * Journal scans run only on quest added/removed/player activated (25 entries max), plus when a
-      pledge quest reaches its hand-in step (EVENT_QUEST_ADVANCED with isComplete, filtered cheaply first).
+      pledge quest advances or completes a condition. Those events are filtered to pledges first and
+      coalesced into one deferred rescan, so a burst of quest events costs a single scan.
 ]]
 
 local addon = EsoQol
@@ -32,6 +33,8 @@ local Pledges =
     markedEntries = {},       -- [activityEntry] = questName
     appliedLocations = {},    -- [location] = true, locations this addon selected
     markedActivityIds = {},   -- [activityId] = true, both difficulties of every pledged dungeon (O(1) row lookup)
+    previousMarked = {},      -- scratch: markedEntries before a rescan, to detect pledges that just got done
+    rescanQueued = false,
 }
 addon.Pledges = Pledges
 
@@ -63,7 +66,8 @@ function Pledges:GetActivityIndex()
     for activityType, difficultyKey in pairs(dungeonTypes) do
         for index = 1, GetNumActivitiesByType(activityType) do
             local activityId = GetActivityIdByTypeAndIndex(activityType, index)
-            local key = NormalizeName(GetActivityName(activityId))
+            local activityName = zo_strformat("<<1>>", GetActivityName(activityId))
+            local key = NormalizeName(activityName)
             local zoneId = GetActivityZoneId(activityId) or 0
 
             local entry = (zoneId ~= 0 and byZoneId[zoneId]) or byName[key]
@@ -78,6 +82,15 @@ function Pledges:GetActivityIndex()
             if key ~= "" and not byName[key] then
                 byName[key] = entry
                 nameList[#nameList + 1] = { key = key, entry = entry }
+            end
+            -- Translation addons show "Local Name (English Name)": index both halves so the quest name matches.
+            local outside, inside = activityName:match("^(.-)%s*%((.-)%)%s*$")
+            for _, part in ipairs({ outside, inside }) do
+                local partKey = part and NormalizeName(part) or ""
+                if partKey ~= "" and not byName[partKey] then
+                    byName[partKey] = entry
+                    nameList[#nameList + 1] = { key = partKey, entry = entry }
+                end
             end
         end
     end
@@ -101,9 +114,34 @@ local function IsPledgeQuest(journalIndex)
     return questType == QUEST_TYPE_DUNGEON and GetJournalQuestRepeatType(journalIndex) == QUEST_REPEAT_DAILY
 end
 
--- A pledge still to be run: in the journal and not yet at its "return to the quest giver" step.
-local function IsActivePledgeQuest(journalIndex)
-    return IsPledgeQuest(journalIndex) and not GetJournalQuestIsComplete(journalIndex)
+-- True once the dungeon is cleared and the pledge only has to be handed in ("Return to <quest giver>").
+-- Several independent signals, since the turn-in step is not flagged the same way on every pledge.
+local function IsPledgeDone(journalIndex)
+    if GetJournalQuestIsComplete(journalIndex) then
+        return true
+    end
+
+    local _, _, stepType, _, numConditions = GetJournalQuestStepInfo(journalIndex, QUEST_MAIN_STEP_INDEX)
+    if stepType == QUEST_STEP_TYPE_END then
+        return true
+    end
+
+    -- The current step only asks to talk to someone: that is the hand-in step.
+    if QUEST_CONDITION_TYPE_TALK_TO and numConditions and numConditions > 0 then
+        local hasTalkTo = false
+        for conditionIndex = 1, numConditions do
+            local _, _, _, isFailCondition, isComplete, _, isVisible, conditionType = GetJournalQuestConditionInfo(journalIndex, QUEST_MAIN_STEP_INDEX, conditionIndex)
+            if isVisible and not isFailCondition and not isComplete then
+                if conditionType ~= QUEST_CONDITION_TYPE_TALK_TO then
+                    return false
+                end
+                hasTalkTo = true
+            end
+        end
+        return hasTalkTo
+    end
+
+    return false
 end
 
 function Pledges:ResolveActivityEntry(journalIndex)
@@ -285,6 +323,11 @@ end
 
 function Pledges:RescanJournal()
     local marked = self.markedEntries
+    local previous = self.previousMarked
+    ZO_ClearTable(previous)
+    for entry, questName in pairs(marked) do
+        previous[entry] = questName
+    end
     ZO_ClearTable(marked)
 
     if not self.isEnabled then
@@ -292,7 +335,7 @@ function Pledges:RescanJournal()
     end
 
     for journalIndex = 1, MAX_JOURNAL_QUESTS do
-        if IsValidQuestIndex(journalIndex) and IsActivePledgeQuest(journalIndex) then
+        if IsValidQuestIndex(journalIndex) and IsPledgeQuest(journalIndex) and not IsPledgeDone(journalIndex) then
             local entry = self:ResolveActivityEntry(journalIndex)
             if entry then
                 marked[entry] = GetJournalQuestName(journalIndex)
@@ -301,9 +344,59 @@ function Pledges:RescanJournal()
     end
     self:RebuildMarkedActivityIds()
 
+    -- Pledges that were marked until now and are done: uncheck their dungeon (whoever checked it) once.
+    for entry, questName in pairs(previous) do
+        if not marked[entry] and self:IsQuestNameDone(questName) then
+            self:DeselectEntry(entry)
+            if self.savedVars.notify then
+                addon:SystemMessage(zo_strformat(SI_ESOQOL_PLEDGE_READY, zo_strformat(SI_QUEST_JOURNAL_QUEST_NAME_FORMAT, questName)))
+            end
+        end
+    end
+    ZO_ClearTable(previous)
+
     -- Selections and/or highlights may have changed; both refreshes are no-ops while the finder is closed.
     self:ClearAppliedSelections(true)
     self:RefreshFinderViews()
+end
+
+-- Still in the journal (not abandoned / turned in) and done.
+function Pledges:IsQuestNameDone(questName)
+    for journalIndex = 1, MAX_JOURNAL_QUESTS do
+        if IsValidQuestIndex(journalIndex) and GetJournalQuestName(journalIndex) == questName then
+            return IsPledgeQuest(journalIndex) and IsPledgeDone(journalIndex)
+        end
+    end
+    return false
+end
+
+function Pledges:DeselectEntry(entry)
+    if IsCurrentlySearchingForGroup() then
+        return
+    end
+    local manager = ZO_ACTIVITY_FINDER_ROOT_MANAGER
+    for _, activityId in pairs({ entry.normal, entry.veteran }) do
+        local location = GetLocation(activityId)
+        if location then
+            self.appliedLocations[location] = nil
+            if location:IsSelected() then
+                manager:SetLocationSelected(location, false)
+            end
+        end
+    end
+end
+
+-- Quest events come in bursts (condition + advance + tracker); coalesce them into one scan next frame.
+function Pledges:QueueRescan()
+    if self.rescanQueued then
+        return
+    end
+    self.rescanQueued = true
+    EVENT_MANAGER:RegisterForUpdate(EVENT_NAMESPACE .. "_Rescan", 0, function()
+        EVENT_MANAGER:UnregisterForUpdate(EVENT_NAMESPACE .. "_Rescan")
+        self.rescanQueued = false
+        self:RescanJournal()
+    end)
 end
 
 ----------------------------------
@@ -311,7 +404,7 @@ end
 ----------------------------------
 
 function Pledges:OnQuestAdded(journalIndex, questName)
-    if not IsActivePledgeQuest(journalIndex) then
+    if not IsPledgeQuest(journalIndex) or IsPledgeDone(journalIndex) then
         return
     end
 
@@ -334,22 +427,30 @@ function Pledges:OnQuestAdded(journalIndex, questName)
     -- and redraws the rows (and so the highlights).
 end
 
--- The pledge is done and only has to be handed in: drop its mark, check box and highlight.
-function Pledges:OnQuestAdvanced(journalIndex, questName, isComplete)
-    if not isComplete or not IsPledgeQuest(journalIndex) then
-        return
+-- A pledge moved on (e.g. dungeon cleared -> "Return to <quest giver>"). Only pledges that are
+-- currently marked can change anything, so everything else returns after two cheap checks.
+function Pledges:OnPledgeProgress(journalIndex)
+    if next(self.markedEntries) ~= nil and IsPledgeQuest(journalIndex) then
+        self:QueueRescan()
     end
+end
 
-    local entry = self:ResolveActivityEntry(journalIndex)
-    if not (entry and self.markedEntries[entry]) then
-        return
-    end
-
-    -- Rescan rather than removing the entry directly, so another active pledge for the same dungeon keeps it.
-    self:RescanJournal()
-
-    if self.savedVars.notify then
-        addon:SystemMessage(zo_strformat(SI_ESOQOL_PLEDGE_READY, zo_strformat(SI_QUEST_JOURNAL_QUEST_NAME_FORMAT, questName)))
+-- Diagnostics: /esoqolpledges prints how every pledge in the journal is seen.
+function Pledges:PrintDebug()
+    for journalIndex = 1, MAX_JOURNAL_QUESTS do
+        if IsValidQuestIndex(journalIndex) and IsPledgeQuest(journalIndex) then
+            local _, _, stepType, _, numConditions = GetJournalQuestStepInfo(journalIndex, QUEST_MAIN_STEP_INDEX)
+            local conditions = {}
+            for conditionIndex = 1, numConditions or 0 do
+                local _, _, _, isFail, isComplete, _, isVisible, conditionType = GetJournalQuestConditionInfo(journalIndex, QUEST_MAIN_STEP_INDEX, conditionIndex)
+                conditions[#conditions + 1] = string.format("[type=%s vis=%s done=%s fail=%s]", tostring(conditionType), tostring(isVisible), tostring(isComplete), tostring(isFail))
+            end
+            local entry = self:ResolveActivityEntry(journalIndex)
+            addon:SystemMessage(string.format("%s: isComplete=%s stepType=%s done=%s dungeon=%s %s",
+                GetJournalQuestName(journalIndex), tostring(GetJournalQuestIsComplete(journalIndex)), tostring(stepType),
+                tostring(IsPledgeDone(journalIndex)), entry and tostring(entry.normal or entry.veteran) or "none",
+                table.concat(conditions, " ")))
+        end
     end
 end
 
@@ -433,8 +534,14 @@ function Pledges:SetEnabled(enabled)
         EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_QUEST_ADDED, function(_, journalIndex, questName)
             self:OnQuestAdded(journalIndex, questName)
         end)
-        EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_QUEST_ADVANCED, function(_, journalIndex, questName, _, isComplete)
-            self:OnQuestAdvanced(journalIndex, questName, isComplete)
+        EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_QUEST_ADVANCED, function(_, journalIndex)
+            self:OnPledgeProgress(journalIndex)
+        end)
+        -- Only condition completions matter (kill-counter ticks are ignored).
+        EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_QUEST_CONDITION_COUNTER_CHANGED, function(_, journalIndex, _, _, _, _, _, _, _, _, _, _, isConditionComplete, _, isConditionCompleteChanged)
+            if isConditionComplete and isConditionCompleteChanged ~= false then
+                self:OnPledgeProgress(journalIndex)
+            end
         end)
         EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_QUEST_REMOVED, function()
             self:RescanJournal()
@@ -447,6 +554,9 @@ function Pledges:SetEnabled(enabled)
     else
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_QUEST_ADDED)
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_QUEST_ADVANCED)
+        EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_QUEST_CONDITION_COUNTER_CHANGED)
+        EVENT_MANAGER:UnregisterForUpdate(EVENT_NAMESPACE .. "_Rescan")
+        self.rescanQueued = false
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_QUEST_REMOVED)
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED)
         ZO_ClearTable(self.markedEntries)
@@ -458,6 +568,9 @@ end
 
 function Pledges:Initialize(savedVars)
     self.savedVars = savedVars
+    SLASH_COMMANDS["/esoqolpledges"] = function()
+        self:PrintDebug()
+    end
     self:SetEnabled(savedVars.enabled)
 end
 
