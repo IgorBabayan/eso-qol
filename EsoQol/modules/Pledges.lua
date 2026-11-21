@@ -1,6 +1,8 @@
 --[[
     Undaunted pledges: when a pledge quest is in the journal, its dungeon is checked
     in the Dungeon Finder's specific dungeon list and its name is shown in light blue (keyboard and gamepad).
+    Once the pledge is done and only has to be handed in to the Undaunted quest giver, the dungeon is
+    unchecked and its highlight removed.
 
     How it fits the game's own code:
     * ZO_ACTIVITY_FINDER_ROOT_MANAGER clears every selection whenever the finder's filter changes or its
@@ -11,7 +13,8 @@
 
     Performance notes:
     * The dungeon activity index is built once, on first use.
-    * Journal scans run only on quest added/removed/player activated (25 entries max).
+    * Journal scans run only on quest added/removed/player activated (25 entries max), plus when a
+      pledge quest reaches its hand-in step (EVENT_QUEST_ADVANCED with isComplete, filtered cheaply first).
 ]]
 
 local addon = EsoQol
@@ -96,6 +99,11 @@ local function IsPledgeQuest(journalIndex)
         return questType == QUEST_TYPE_UNDAUNTED_PLEDGE
     end
     return questType == QUEST_TYPE_DUNGEON and GetJournalQuestRepeatType(journalIndex) == QUEST_REPEAT_DAILY
+end
+
+-- A pledge still to be run: in the journal and not yet at its "return to the quest giver" step.
+local function IsActivePledgeQuest(journalIndex)
+    return IsPledgeQuest(journalIndex) and not GetJournalQuestIsComplete(journalIndex)
 end
 
 function Pledges:ResolveActivityEntry(journalIndex)
@@ -284,7 +292,7 @@ function Pledges:RescanJournal()
     end
 
     for journalIndex = 1, MAX_JOURNAL_QUESTS do
-        if IsValidQuestIndex(journalIndex) and IsPledgeQuest(journalIndex) then
+        if IsValidQuestIndex(journalIndex) and IsActivePledgeQuest(journalIndex) then
             local entry = self:ResolveActivityEntry(journalIndex)
             if entry then
                 marked[entry] = GetJournalQuestName(journalIndex)
@@ -303,7 +311,7 @@ end
 ----------------------------------
 
 function Pledges:OnQuestAdded(journalIndex, questName)
-    if not IsPledgeQuest(journalIndex) then
+    if not IsActivePledgeQuest(journalIndex) then
         return
     end
 
@@ -324,6 +332,25 @@ function Pledges:OnQuestAdded(journalIndex, questName)
     -- No selection here: the manager marks itself dirty on EVENT_QUEST_ADDED and clears selections
     -- on its next update; the finder's filter refresh that follows triggers ApplySelections via the hooks
     -- and redraws the rows (and so the highlights).
+end
+
+-- The pledge is done and only has to be handed in: drop its mark, check box and highlight.
+function Pledges:OnQuestAdvanced(journalIndex, questName, isComplete)
+    if not isComplete or not IsPledgeQuest(journalIndex) then
+        return
+    end
+
+    local entry = self:ResolveActivityEntry(journalIndex)
+    if not (entry and self.markedEntries[entry]) then
+        return
+    end
+
+    -- Rescan rather than removing the entry directly, so another active pledge for the same dungeon keeps it.
+    self:RescanJournal()
+
+    if self.savedVars.notify then
+        addon:SystemMessage(zo_strformat(SI_ESOQOL_PLEDGE_READY, zo_strformat(SI_QUEST_JOURNAL_QUEST_NAME_FORMAT, questName)))
+    end
 end
 
 function Pledges:InstallHooks()
@@ -406,6 +433,9 @@ function Pledges:SetEnabled(enabled)
         EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_QUEST_ADDED, function(_, journalIndex, questName)
             self:OnQuestAdded(journalIndex, questName)
         end)
+        EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_QUEST_ADVANCED, function(_, journalIndex, questName, _, isComplete)
+            self:OnQuestAdvanced(journalIndex, questName, isComplete)
+        end)
         EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_QUEST_REMOVED, function()
             self:RescanJournal()
         end)
@@ -416,6 +446,7 @@ function Pledges:SetEnabled(enabled)
         self:RescanJournal()
     else
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_QUEST_ADDED)
+        EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_QUEST_ADVANCED)
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_QUEST_REMOVED)
         EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVATED)
         ZO_ClearTable(self.markedEntries)

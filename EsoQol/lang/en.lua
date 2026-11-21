@@ -25,6 +25,7 @@ local strings =
     -- Pledges
     SI_ESOQOL_PLEDGE_MARKED = "Undaunted pledge: |cFFFFFF<<1>>|r marked in the Dungeon Finder.",
     SI_ESOQOL_PLEDGE_NOT_FOUND = "Undaunted pledge: no Dungeon Finder entry found for |cFFFFFF<<1>>|r.",
+    SI_ESOQOL_PLEDGE_READY = "Undaunted pledge: |cFFFFFF<<1>>|r done, unmarked in the Dungeon Finder. Return to the quest giver.",
 
     -- Disassemble All (Giladil the Ragpicker)
     SI_ESOQOL_DISASSEMBLE_ALL = "Disassemble All",
@@ -47,7 +48,7 @@ local strings =
     SI_ESOQOL_SETTINGS_TAP_ACTION_TT ="A short tap of the wheel key summons (or dismisses, if it is out) the entry you used last, without opening the wheel.",
 
     SI_ESOQOL_SETTINGS_PLEDGES_HEADER = "Undaunted Pledges",
-    SI_ESOQOL_SETTINGS_PLEDGES_DESC = "When you accept an Undaunted pledge, its dungeon is checked in the Dungeon Finder's specific dungeon list. It is unchecked again when the pledge is completed or abandoned.",
+    SI_ESOQOL_SETTINGS_PLEDGES_DESC = "When you accept an Undaunted pledge, its dungeon is checked in the Dungeon Finder's specific dungeon list. It is unchecked again once the pledge is done and only has to be handed in, or when it is abandoned.",
     SI_ESOQOL_SETTINGS_PLEDGES_DIFFICULTY = "Difficulty to mark",
     SI_ESOQOL_SETTINGS_PLEDGES_DIFFICULTY_AUTO = "Auto (veteran from CP 160)",
     SI_ESOQOL_SETTINGS_PLEDGES_DIFFICULTY_NORMAL = "Normal",
