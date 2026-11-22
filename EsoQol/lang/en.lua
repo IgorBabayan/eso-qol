@@ -1,3 +1,12 @@
+-- English strings: the base set. Every other language file only overrides these, so any string it
+-- lacks falls back to English. The manifest also lists lang/$(language).lua, which on an English
+-- client is this file again: the guard makes that second load a no-op.
+EsoQol = EsoQol or {}
+if EsoQol.stringsLoaded then
+    return
+end
+EsoQol.stringsLoaded = true
+
 local strings =
 {
     -- Keybindings
