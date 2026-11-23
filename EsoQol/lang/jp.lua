@@ -79,6 +79,14 @@ local strings =
     SI_ESOQOL_SETTINGS_HOTKEYS_CHAT = "テレポート時にチャットメッセージ",
 
     SI_ESOQOL_SETTINGS_INTRO_SKIP_TT = "ゲーム起動時のロゴとイントロ動画をスキップします。次回のゲーム起動から有効になります。",
+
+    -- Sell Ornate
+    SI_ESOQOL_SELL_ORNATE_DONE = "華麗売却: アイテム<<1>>個を<<2>>で売却しました。",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_HEADER = "華麗アイテムの自動売却",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_DESC = "商人の店を開くと、所持品にある特性「華麗」のアイテムをすべて自動で売却します。ロック中、盗品、アーモリービルドのアイテムは除外されます。",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED = "未収集のセット装備を残す",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED_TT = "セットコレクションに未登録の華麗セットアイテムは売却しません。",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_CHAT = "合計ゴールドをチャットに表示",
 }
 
 for stringId, text in pairs(strings) do

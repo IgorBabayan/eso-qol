@@ -87,6 +87,14 @@ local strings =
     SI_ESOQOL_SETTINGS_HOTKEYS_CHAT = "Chat message on teleport",
 
     SI_ESOQOL_SETTINGS_INTRO_SKIP_TT = "Skips the logo and intro videos when the game starts. Takes effect from the next game launch.",
+
+    -- Sell Ornate
+    SI_ESOQOL_SELL_ORNATE_DONE = "Sell Ornate: sold <<1>> items for <<2>>.",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_HEADER = "Auto-sell Ornate Items",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_DESC = "When you open a merchant's store, every item with the Ornate trait in your backpack is sold automatically. Locked, stolen and Armory items are skipped.",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED = "Keep uncollected set pieces",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED_TT = "Don't sell Ornate set items that aren't in your Set Collection yet.",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_CHAT = "Chat message with total gold",
 }
 
 for stringId, text in pairs(strings) do

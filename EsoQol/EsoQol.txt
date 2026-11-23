@@ -1,5 +1,5 @@
 ## Title: ESO QoL
-## Description: Quality of life: companion & assistant radial menus, Undaunted pledge dungeon marking, dungeon achievement icons in the Dungeon Finder, intro video skipping, "Disassemble All" at Giladil the Ragpicker, auto-filled confirmation text (e.g. DESTROY), Reload UI and teleport-home hotkeys.
+## Description: Quality of life: companion & assistant radial menus, Undaunted pledge dungeon marking, dungeon achievement icons in the Dungeon Finder, intro video skipping, "Disassemble All" at Giladil the Ragpicker, auto-selling Ornate items at merchants, auto-filled confirmation text (e.g. DESTROY), Reload UI and teleport-home hotkeys.
 ## Author: IgorBabayan
 ## Version: 1.0.0
 ## AddOnVersion: 10000
@@ -17,6 +17,7 @@ modules/Pledges.lua
 modules/DungeonAchievements.lua
 modules/SkipIntro.lua
 modules/DisassembleAll.lua
+modules/SellOrnate.lua
 modules/ConfirmText.lua
 modules/Hotkeys.lua
 Settings.lua

@@ -48,6 +48,12 @@ addon.defaults =
         confirm = true,
         chatMessage = true,
     },
+    sellOrnate =
+    {
+        enabled = true,
+        skipUncollected = true,
+        chatMessage = true,
+    },
     confirmText =
     {
         enabled = true,

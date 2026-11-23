@@ -79,6 +79,14 @@ local strings =
     SI_ESOQOL_SETTINGS_HOTKEYS_CHAT = "Chatnachricht beim Teleportieren",
 
     SI_ESOQOL_SETTINGS_INTRO_SKIP_TT = "Überspringt die Logo- und Intro-Videos beim Spielstart. Wirkt ab dem nächsten Spielstart.",
+
+    -- Sell Ornate
+    SI_ESOQOL_SELL_ORNATE_DONE = "Prunkvoll verkaufen: <<1>> Gegenstände für <<2>> verkauft.",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_HEADER = "Prunkvolle Gegenstände automatisch verkaufen",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_DESC = "Beim Öffnen eines Händlers werden alle Gegenstände mit der Eigenschaft „Prunkvoll“ im Inventar automatisch verkauft. Gesperrte, gestohlene und Gegenstände in Waffenkammer-Builds werden übersprungen.",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED = "Ungesammelte Setteile behalten",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED_TT = "Prunkvolle Setgegenstände, die noch nicht in deiner Setsammlung sind, nicht verkaufen.",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_CHAT = "Chatnachricht mit Goldsumme",
 }
 
 for stringId, text in pairs(strings) do

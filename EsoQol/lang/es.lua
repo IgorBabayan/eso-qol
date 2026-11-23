@@ -79,6 +79,14 @@ local strings =
     SI_ESOQOL_SETTINGS_HOTKEYS_CHAT = "Mensaje en el chat al teletransportarse",
 
     SI_ESOQOL_SETTINGS_INTRO_SKIP_TT = "Salta el logotipo y los vídeos de introducción al iniciar el juego. Surte efecto a partir del próximo inicio.",
+
+    -- Sell Ornate
+    SI_ESOQOL_SELL_ORNATE_DONE = "Venta de ornamentados: <<1>> objetos vendidos por <<2>>.",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_HEADER = "Venta automática de objetos ornamentados",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_DESC = "Al abrir la tienda de un mercader, todos los objetos de tu mochila con el rasgo Ornamentado se venden automáticamente. Se omiten los objetos bloqueados, robados y los del Arsenal.",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED = "Conservar piezas de conjunto no coleccionadas",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED_TT = "No vender objetos de conjunto ornamentados que aún no estén en tu colección de conjuntos.",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_CHAT = "Mensaje en el chat con el oro total",
 }
 
 for stringId, text in pairs(strings) do

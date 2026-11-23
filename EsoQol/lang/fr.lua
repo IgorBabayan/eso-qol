@@ -79,6 +79,14 @@ local strings =
     SI_ESOQOL_SETTINGS_HOTKEYS_CHAT = "Message de discussion lors de la téléportation",
 
     SI_ESOQOL_SETTINGS_INTRO_SKIP_TT = "Passe le logo et les vidéos d'introduction au lancement du jeu. Prend effet au prochain lancement.",
+
+    -- Sell Ornate
+    SI_ESOQOL_SELL_ORNATE_DONE = "Vente des objets ornés : <<1>> objets vendus pour <<2>>.",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_HEADER = "Vente auto des objets ornés",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_DESC = "À l'ouverture d'une boutique de marchand, tous les objets de votre sac avec le trait Orné sont vendus automatiquement. Les objets verrouillés, volés et ceux de l'Arsenal sont ignorés.",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED = "Garder les pièces d'ensemble non collectées",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED_TT = "Ne pas vendre les objets d'ensemble ornés absents de votre collection d'ensembles.",
+    SI_ESOQOL_SETTINGS_SELL_ORNATE_CHAT = "Message de chat avec l'or total",
 }
 
 for stringId, text in pairs(strings) do

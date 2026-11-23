@@ -200,7 +200,40 @@ function addon:InitializeSettings()
         default = defaults.disassembleAll.chatMessage,
     }
 
-    -- 7: confirmation dialogs
+    -- 7: auto-sell Ornate items at merchants
+    local sellOrnateSV = function() return self.sv.sellOrnate end
+    local sellOrnateDisabled = function() return not sellOrnateSV().enabled end
+    controls[#controls + 1] = { type = "header", name = GetString(SI_ESOQOL_SETTINGS_SELL_ORNATE_HEADER) }
+    controls[#controls + 1] = { type = "description", text = GetString(SI_ESOQOL_SETTINGS_SELL_ORNATE_DESC) }
+    controls[#controls + 1] =
+    {
+        type = "checkbox",
+        name = GetString(SI_ESOQOL_SETTINGS_ENABLED),
+        getFunc = function() return sellOrnateSV().enabled end,
+        setFunc = function(value) self.SellOrnate:SetEnabled(value) end,
+        default = defaults.sellOrnate.enabled,
+    }
+    controls[#controls + 1] =
+    {
+        type = "checkbox",
+        name = GetString(SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED),
+        tooltip = GetString(SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED_TT),
+        getFunc = function() return sellOrnateSV().skipUncollected end,
+        setFunc = function(value) sellOrnateSV().skipUncollected = value end,
+        disabled = sellOrnateDisabled,
+        default = defaults.sellOrnate.skipUncollected,
+    }
+    controls[#controls + 1] =
+    {
+        type = "checkbox",
+        name = GetString(SI_ESOQOL_SETTINGS_SELL_ORNATE_CHAT),
+        getFunc = function() return sellOrnateSV().chatMessage end,
+        setFunc = function(value) sellOrnateSV().chatMessage = value end,
+        disabled = sellOrnateDisabled,
+        default = defaults.sellOrnate.chatMessage,
+    }
+
+    -- 8: confirmation dialogs
     controls[#controls + 1] = { type = "header", name = GetString(SI_ESOQOL_SETTINGS_CONFIRM_TEXT_HEADER) }
     controls[#controls + 1] =
     {
@@ -212,7 +245,7 @@ function addon:InitializeSettings()
         default = defaults.confirmText.enabled,
     }
 
-    -- 8: hotkeys
+    -- 9: hotkeys
     local hotkeySV = function() return self.sv.hotkeys end
     controls[#controls + 1] = { type = "header", name = GetString(SI_ESOQOL_SETTINGS_HOTKEYS_HEADER) }
     controls[#controls + 1] = { type = "description", text = GetString(SI_ESOQOL_SETTINGS_HOTKEYS_DESC) }
