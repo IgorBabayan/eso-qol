@@ -81,12 +81,14 @@ local strings =
     SI_ESOQOL_SETTINGS_INTRO_SKIP_TT = "Überspringt die Logo- und Intro-Videos beim Spielstart. Wirkt ab dem nächsten Spielstart.",
 
     -- Sell Ornate
-    SI_ESOQOL_SELL_ORNATE_DONE = "Prunkvoll verkaufen: <<1>> Gegenstände für <<2>> verkauft.",
+    SI_ESOQOL_SELL_ORNATE_DONE = "Automatisch verkauft: <<1>> Gegenstände für <<2>>.",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_HEADER = "Prunkvolle Gegenstände automatisch verkaufen",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_DESC = "Beim Öffnen eines Händlers werden alle Gegenstände mit der Eigenschaft „Prunkvoll“ im Inventar automatisch verkauft. Gesperrte, gestohlene und Gegenstände in Waffenkammer-Builds werden übersprungen.",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED = "Ungesammelte Setteile behalten",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED_TT = "Prunkvolle Setgegenstände, die noch nicht in deiner Setsammlung sind, nicht verkaufen.",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_CHAT = "Chatnachricht mit Goldsumme",
+    SI_ESOQOL_SETTINGS_SELL_POTIONS_HEADER = "Tränke automatisch verkaufen",
+    SI_ESOQOL_SETTINGS_SELL_POTIONS_DESC = "Beim Öffnen eines Händlers werden die unten markierten Tränke automatisch verkauft, in jeder Stufe (vom Schluck bis zur Essenz). Nur die gewöhnlichen erbeuteten / gekauften Tränke; hergestellte, gesperrte und gestohlene bleiben erhalten.",
 }
 
 for stringId, text in pairs(strings) do

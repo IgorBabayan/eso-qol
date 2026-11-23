@@ -53,6 +53,9 @@ addon.defaults =
         enabled = true,
         skipUncollected = true,
         chatMessage = true,
+        sellPotionHealth = true,
+        sellPotionMagicka = true,
+        sellPotionStamina = true,
     },
     confirmText =
     {

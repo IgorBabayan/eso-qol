@@ -81,12 +81,14 @@ local strings =
     SI_ESOQOL_SETTINGS_INTRO_SKIP_TT = "Пропускает логотипы и вступительные видео при запуске игры. Вступает в силу со следующего запуска.",
 
     -- Sell Ornate
-    SI_ESOQOL_SELL_ORNATE_DONE = "Продажа богатых: продано предметов — <<1>>, получено <<2>>.",
+    SI_ESOQOL_SELL_ORNATE_DONE = "Автопродажа: продано предметов — <<1>>, получено <<2>>.",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_HEADER = "Автопродажа богатых предметов",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_DESC = "При открытии лавки торговца все предметы с особенностью «Богатый» из рюкзака продаются автоматически. Заблокированные, краденые предметы и предметы Арсенала пропускаются.",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED = "Оставлять несобранные предметы комплектов",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED_TT = "Не продавать богатые предметы комплектов, которых ещё нет в коллекции комплектов.",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_CHAT = "Сообщение в чат с суммой золота",
+    SI_ESOQOL_SETTINGS_SELL_POTIONS_HEADER = "Автопродажа зелий",
+    SI_ESOQOL_SETTINGS_SELL_POTIONS_DESC = "При открытии лавки торговца отмеченные ниже зелья продаются автоматически, любого уровня (от глотка до эссенции). Только обычные найденные / купленные зелья; созданные, заблокированные и краденые остаются.",
 }
 
 for stringId, text in pairs(strings) do

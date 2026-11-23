@@ -81,12 +81,14 @@ local strings =
     SI_ESOQOL_SETTINGS_INTRO_SKIP_TT = "Passe le logo et les vidéos d'introduction au lancement du jeu. Prend effet au prochain lancement.",
 
     -- Sell Ornate
-    SI_ESOQOL_SELL_ORNATE_DONE = "Vente des objets ornés : <<1>> objets vendus pour <<2>>.",
+    SI_ESOQOL_SELL_ORNATE_DONE = "Vente auto : <<1>> objets vendus pour <<2>>.",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_HEADER = "Vente auto des objets ornés",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_DESC = "À l'ouverture d'une boutique de marchand, tous les objets de votre sac avec le trait Orné sont vendus automatiquement. Les objets verrouillés, volés et ceux de l'Arsenal sont ignorés.",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED = "Garder les pièces d'ensemble non collectées",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED_TT = "Ne pas vendre les objets d'ensemble ornés absents de votre collection d'ensembles.",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_CHAT = "Message de chat avec l'or total",
+    SI_ESOQOL_SETTINGS_SELL_POTIONS_HEADER = "Vente auto des potions",
+    SI_ESOQOL_SETTINGS_SELL_POTIONS_DESC = "À l'ouverture d'une boutique de marchand, les potions cochées ci-dessous sont vendues automatiquement, quel que soit leur niveau (de la gorgée à l'essence). Seulement les potions génériques trouvées ou achetées ; celles fabriquées, verrouillées ou volées sont conservées.",
 }
 
 for stringId, text in pairs(strings) do

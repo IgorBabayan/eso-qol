@@ -81,12 +81,14 @@ local strings =
     SI_ESOQOL_SETTINGS_INTRO_SKIP_TT = "游戏启动时跳过标志和开场视频。从下次启动游戏时生效。",
 
     -- Sell Ornate
-    SI_ESOQOL_SELL_ORNATE_DONE = "出售华丽物品：已出售 <<1>> 件，获得 <<2>>。",
+    SI_ESOQOL_SELL_ORNATE_DONE = "自动出售：已出售 <<1>> 件，获得 <<2>>。",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_HEADER = "自动出售华丽物品",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_DESC = "打开商人商店时，背包中所有带有华丽特性的物品都会自动出售。已锁定、偷来的物品以及军械库配置中的物品会被跳过。",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED = "保留未收集的套装部件",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_UNCOLLECTED_TT = "不出售尚未加入套装收藏的华丽套装物品。",
     SI_ESOQOL_SETTINGS_SELL_ORNATE_CHAT = "在聊天中显示金币总额",
+    SI_ESOQOL_SETTINGS_SELL_POTIONS_HEADER = "自动出售药水",
+    SI_ESOQOL_SETTINGS_SELL_POTIONS_DESC = "打开商人商店时，下方勾选的药水会自动出售（所有等级）。仅限掉落或购买的通用药水；制作的、已锁定的和偷来的药水会被保留。",
 }
 
 for stringId, text in pairs(strings) do

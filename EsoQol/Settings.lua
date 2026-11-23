@@ -203,6 +203,7 @@ function addon:InitializeSettings()
     -- 7: auto-sell Ornate items at merchants
     local sellOrnateSV = function() return self.sv.sellOrnate end
     local sellOrnateDisabled = function() return not sellOrnateSV().enabled end
+    local sellNothing = function() return not self.SellOrnate:IsAnyEnabled() end
     controls[#controls + 1] = { type = "header", name = GetString(SI_ESOQOL_SETTINGS_SELL_ORNATE_HEADER) }
     controls[#controls + 1] = { type = "description", text = GetString(SI_ESOQOL_SETTINGS_SELL_ORNATE_DESC) }
     controls[#controls + 1] =
@@ -229,9 +230,26 @@ function addon:InitializeSettings()
         name = GetString(SI_ESOQOL_SETTINGS_SELL_ORNATE_CHAT),
         getFunc = function() return sellOrnateSV().chatMessage end,
         setFunc = function(value) sellOrnateSV().chatMessage = value end,
-        disabled = sellOrnateDisabled,
+        disabled = sellNothing,
         default = defaults.sellOrnate.chatMessage,
     }
+
+    -- 7b: auto-sell generic potions at merchants (same run as Ornate items)
+    controls[#controls + 1] = { type = "header", name = GetString(SI_ESOQOL_SETTINGS_SELL_POTIONS_HEADER) }
+    controls[#controls + 1] = { type = "description", text = GetString(SI_ESOQOL_SETTINGS_SELL_POTIONS_DESC) }
+    for _, potion in ipairs(self.SellOrnate.POTIONS) do
+        local key = potion.key
+        -- The game's own item name, so the label is in the client's language with no extra strings.
+        local itemLink = string.format("|H0:item:%d:308:50:0:0:0:0:0:0:0:0:0:0:0:0:36:0:0:0:0:0|h|h", potion.itemId)
+        controls[#controls + 1] =
+        {
+            type = "checkbox",
+            name = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink)),
+            getFunc = function() return sellOrnateSV()[key] end,
+            setFunc = function(value) self.SellOrnate:SetPotionEnabled(key, value) end,
+            default = defaults.sellOrnate[key],
+        }
+    end
 
     -- 8: confirmation dialogs
     controls[#controls + 1] = { type = "header", name = GetString(SI_ESOQOL_SETTINGS_CONFIRM_TEXT_HEADER) }
